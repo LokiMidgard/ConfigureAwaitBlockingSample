@@ -36,13 +36,19 @@ namespace WpfApp2
         public static async Task Do()
         {
             await SubTask().ConfigureAwait(false);
-            Task.Delay(TimeSpan.FromSeconds(10)).Wait();
+            // We are still in the UI thread here
+            SubTask2().Wait(); // <-- This will block the current thread it doesn't matter if SubTask2 uses ConfigureAwait(false)
         }
 
         public static Task SubTask()
         {
             // simulate fast completion
             return Task.CompletedTask;
+        }
+
+        public static async Task SubTask2()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
         }
     }
 }
